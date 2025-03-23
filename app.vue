@@ -1,7 +1,7 @@
 <script setup>
 useHead({
   titleTemplate: (titleChunk) => {
-    return titleChunk ? `${titleChunk} - MyShop` : 'MyShop';
+    return titleChunk ? `${titleChunk} - MyBlog` : 'MyBlog';
   }
 })
 
@@ -11,7 +11,6 @@ useHead({
   <UApp>
     <NuxtLayout>
       <NuxtPage/>
-
     </NuxtLayout>
   </UApp>
 </template>
