@@ -7,7 +7,24 @@ export default defineNuxtConfig({
     "@nuxthub/core",
     "nuxt-auth-utils",
     "@scalar/nuxt",
+    "@nuxtjs/mdc",
+    "@nuxtjs/seo"
   ],
+  ogImage: {
+    fonts: [
+      // will load this font from Google fonts
+      'Noto+Sans+Hebrew:400'
+    ]
+  },
+  sitemap: {
+    sources: [ '/api/__sitemap__/urls'],
+  },
+  site: {
+    url: 'https://example.com',
+    name: 'Awesome Site',
+    description: 'Welcome to my awesome site!',
+    defaultLocale: 'en', // not needed if you have @nuxtjs/i18n installed
+  },
   hub: {
     database: true
   },

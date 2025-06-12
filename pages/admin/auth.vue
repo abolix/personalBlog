@@ -1,21 +1,36 @@
 <script setup>
+const {fetch} = useUserSession()
+
 const toast = useToast()
 
 const state = reactive({
-  email: undefined,
-  password: undefined
+	email: undefined,
+	password: undefined
 })
 
 const validate = (state) => {
-  const errors = []
-  if (!state.email) errors.push({ name: 'email', message: 'الزامی است.' })
-  if (!state.password) errors.push({ name: 'password', message: 'الزامی است.' })
-  return errors
+	const errors = []
+	if (!state.email) errors.push({ name: 'email', message: 'الزامی است.' })
+	if (!state.password) errors.push({ name: 'password', message: 'الزامی است.' })
+	return errors
 }
 
 async function onSubmit(event) {
-  toast.add({ title: 'Success', description: 'The form has been submitted.', color: 'success' })
-  console.log(event.data)
+const {data,error} = await useFetch('/api/auth/login', {
+		method: 'POST',
+		body: {
+		email: state.email,
+		password: state.password
+	}
+})
+	if (data.value) {
+		toast.add({ title: 'سلام', description: 'شما با موفقیت وارد شدید.', color: 'success' })
+		await fetch()
+	}
+
+	if (error.value) {
+		toast.add({ title: 'خطا', description: error.value.data.message, color: 'error' })
+	}
 }
 </script>
 

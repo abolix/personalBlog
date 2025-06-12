@@ -4,6 +4,6 @@
 
 <template>
 	<div>
-		<UButton to="/admin/posts/new">پست جدید</UButton>
+		<UButton size="xl" to="/admin/posts/">پست ها</UButton>
 	</div>
 </template>

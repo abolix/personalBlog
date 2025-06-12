@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
 	const result = await readValidatedBody(event, body => userSchema.safeParse(body)) // or `.parse` to directly throw an error
 
 	if (!result.success) {
-		// throw result.error.issues
+		setResponseStatus(event, 400)
 		return {
 			status: 400,
 			body: result.error.issues,
@@ -19,17 +19,17 @@ export default defineEventHandler(async (event) => {
 	// check database to see if user exists
 	const user = await useDrizzle().select().from(tables.users).where(eq(tables.users.email, result.data.email)).get()
 	if (!user) {
-		return {
-			status: 401,
-			body: 'User not found',
-		}
+		throw createError({
+			statusCode: 400,
+			statusMessage: 'کاربر یافت نشد.',
+		})
 	}
 
 	if (!(await verifyPassword(user.password, result.data.password))) {
-		return {
-			status: 401,
-			body: 'Password is incorrect',
-		}
+		throw createError({
+			statusCode: 400,
+			statusMessage: 'نام کاربری یا پسورد صحیح نیست',
+		})
 	}
 
 	await setUserSession(event, {
