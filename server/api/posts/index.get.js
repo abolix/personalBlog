@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
         .offset(offset)
 
     if (q) {
-        query = query.where(sql`title ILIKE ${'%' + q + '%'}`)
+        query = query.where(sql`(title LIKE ${'%' + q + '%'} COLLATE NOCASE) OR (content LIKE ${'%' + q + '%'} COLLATE NOCASE)`)
     }
 
     const posts = await query.all()
@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
         .from(tables.posts)
 
     if (q) {
-        totalQuery = totalQuery.where(sql`title ILIKE ${'%' + q + '%'}`)
+        totalQuery = totalQuery.where(sql`(title LIKE ${'%' + q + '%'} COLLATE NOCASE) OR (content LIKE ${'%' + q + '%'} COLLATE NOCASE)`)
     }
 
     const totalPosts = await totalQuery.all()

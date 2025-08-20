@@ -1,8 +1,20 @@
 <script setup>
+definePageMeta({
+  middleware: 'auth'
+})
+
 const toast = useToast()
 
-const {data:posts,refresh} = await useFetch('/api/posts')
 const q = ref('')
+const {data:posts, refresh} = await useFetch('/api/posts', {
+  query: { q },
+  key: 'admin-posts'
+})
+
+// Watch for changes in search query and refresh automatically
+watch(q, async () => {
+  await refresh()
+})
 
 const columns = [
 	{
@@ -25,15 +37,17 @@ const columns = [
   	}
 ]
 
-const searchPost = async () => {
-	const { data } = await useFetch(`/api/posts?q=${q.value}`)
-	if (data.value) {
-		posts.value = data.value
-	}
+const handleSearch = async () => {
+	await refresh()
+}
+
+const handleClearSearch = async () => {
+	q.value = ''
+	await refresh()
 }
 
 const deletePost = async (id) => {
-	const { data, error } = await useFetch(`/api/posts/${id}`, {
+	const { error } = await useFetch(`/api/posts/${id}`, {
 		method: 'DELETE',
 		headers: {
 			'Content-Type': 'application/json',
@@ -52,22 +66,22 @@ const deletePost = async (id) => {
 <template>
 	<div>
 		<UCard>
-			<div class="flex gap-4 items-center">
+			<div class="flex gap-4 items-center justify-between">
 				<div>
 					<UButton size="xl" to="/admin/posts/new">پست جدید</UButton>
 				</div>
-				
-				<div>
-					<UButtonGroup>
 
-						<UInput v-model="q" icon="i-lucide-search" size="md" variant="outline" placeholder="جستجو پست"/>
-							
-							
-						<UButton>جستجو</UButton>
-					</UButtonGroup>
+				<div class="w-full max-w-md">
+					<SearchInput
+						v-model="q"
+						placeholder="جستجوی پست‌ها..."
+						:debounce-ms="0"
+						@search="handleSearch"
+						@clear="handleClearSearch"
+					/>
 				</div>
 			</div>
-		
+
 			<UTable :data="posts.results" :columns="columns" class="flex-1">
 				<template #action-cell="{ row }">
 					<div class="flex gap-2">

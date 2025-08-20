@@ -1,9 +1,15 @@
 <script setup>
+import { MdEditor } from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';
+
 const route = useRoute()
 const { id } = route.params
 const toast = useToast()
+const colorMode = useColorMode()
+
 
 definePageMeta({
+    middleware: 'auth',
     validate: async (route) => {
         const { id } = route.params;
 		if (id === 'new') return true;
@@ -11,8 +17,6 @@ definePageMeta({
 		return true;
 	},
 })
-
-const showPreview = ref(false)
 
 const state = reactive({
 	title: undefined,
@@ -36,11 +40,11 @@ const validate = (state) => {
 	return errors
 }
 
-async function onSubmit(event) {
+async function onSubmit(_event) {
 
 	const method = id === 'new' ? 'POST' : 'PUT'
 	const url = id === 'new' ? '/api/posts' : `/api/posts/${id}`
-	const { data, error } = await useFetch(url, {
+	const { error } = await useFetch(url, {
 		method,
 		body: state,
 		headers: {
@@ -52,16 +56,7 @@ async function onSubmit(event) {
 		return
 	}
 	toast.add({ title: 'انجام شد.', description: 'اطلاعات با موفقیت ارسال شد.', color: 'success' })
-	if (id === 'new') {
-		state.title = ''
-		state.content = ''
-	} else {
-		await navigateTo(`/admin/posts/${data.value.id}`)
-	}
-
-
-	toast.add({ title: 'Success', description: 'The form has been submitted.', color: 'success' })
-	console.log(event.data)
+	await navigateTo('/admin/posts/')
 }
 
 const submitText = computed(() => {
@@ -79,17 +74,14 @@ const submitText = computed(() => {
 			<UFormField label="عنوان" name="title">
 				<UInput v-model="state.title" size="xl" class="w-full"/>
 			</UFormField>
-			<USwitch v-model="showPreview" label="پیش نمایش" />
 			<div class="flex gap-4">
-				<UCard v-if="showPreview" class="w-full">
-					<MDC :value="state.content" class="w-full prose dark:prose-invert" tag="article" />
-				</UCard>
-				<UFormField v-else label="محتوا" name="content" class="w-full">
-					<UTextarea v-model="state.content" size="lg" :rows="12" class="w-full"/>
-				</UFormField>
+				<UFormGroup label="محتوا" name="content" class="w-full">
+					<MdEditor v-model="state.content" :theme="colorMode.value" language="en-US"/>
+				</UFormGroup>
+
 			</div>
 
-			
+
 
 			<UButton type="submit" size="xl" block>
 				{{ submitText }}
