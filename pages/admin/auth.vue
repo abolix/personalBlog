@@ -26,6 +26,7 @@ const {data,error} = await useFetch('/api/auth/login', {
 	if (data.value) {
 		toast.add({ title: 'سلام', description: 'شما با موفقیت وارد شدید.', color: 'success' })
 		await fetch()
+		await navigateTo('/admin/dashboard')
 	}
 
 	if (error.value) {
@@ -40,11 +41,11 @@ const {data,error} = await useFetch('/api/auth/login', {
       <UFormField label="ایمیل" name="email">
         <UInput v-model="state.email" size="xl" trailing-icon="i-ph-at" />
       </UFormField>
-      
+
       <UFormField label="پسورد" name="password">
         <UInput v-model="state.password" size="xl" type="password" trailing-icon="i-ph-password" />
       </UFormField>
-      
+
       <UButton type="submit">
         ورود
       </UButton>
